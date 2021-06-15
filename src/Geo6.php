@@ -253,18 +253,21 @@ class Geo6
      *                         - 3: (1+2, Post Office + Post Point)
      *                         - 4: bpack 24/7
      *                         - 7: (1+2+4, Post Office + Post Point + bpack 24/7)
-     * @param  int   $limit
+     * @param int    $limit
+     * @param string $country  Country: "BE", "FR"...
      * @return array
      * @throws BpostCurlException
      * @throws BpostInvalidXmlResponseException
      * @throws BpostTaxipostLocatorException
      */
-    public function getNearestServicePoint($street, $number, $zone, $language = 'nl', $type = 3, $limit = 10)
+    //public function getNearestServicePoint($street, $number, $zone, $country = 'BE', $language = 'nl', $type = 3, $limit = 10)
+    public function getNearestServicePoint($street, $number, $zone, $language = 'nl', $type = 3, $limit = 10, $country = 'BE')
     {
         $parameters = array(
             'Street' => (string)$street,
             'Number' => (string)$number,
             'Zone' => (string)$zone,
+            'Country' => (string)$country,
             'Language' => (string)$language,
             'Type' => (int)$type,
             'Limit' => (int)$limit
@@ -297,18 +300,20 @@ class Geo6
      *                         - 1: Post Office
      *                         - 2: Post Point
      *                         - 4: bpack 24/7
+     * @param string $country  Country: "BE", "FR"...
      *
      * @return Poi
      * @throws BpostCurlException
      * @throws BpostInvalidXmlResponseException
      * @throws BpostTaxipostLocatorException
      */
-    public function getServicePointDetails($id, $language = 'nl', $type = 3)
+    public function getServicePointDetails($id, $language = 'nl', $type = 3, $country = 'BE')
     {
         $parameters = array(
             'Id' => (string)$id,
             'Language' => (string)$language,
             'Type' => (int)$type,
+            'Country' => (string)$country,
         );
 
         $xml = $this->doCall('info', $parameters);
@@ -321,19 +326,21 @@ class Geo6
     }
 
     /**
-     * @param  int    $id
-     * @param  string $language
-     * @param  int    $type
+     * @param int    $id
+     * @param string $language
+     * @param int    $type
+     * @param string $country
      * @return string
      *
      * @see getPointType to feed the param $type
      */
-    public function getServicePointPageUrl($id, $language = 'nl', $type = 3)
+    public function getServicePointPageUrl($id, $language = 'nl', $type = 3, $country = 'BE')
     {
         $parameters = array(
             'Id' => (string)$id,
             'Language' => (string)$language,
             'Type' => (int)$type,
+            'Country' => (string)$country,
         );
 
         return $this->buildUrl('page', $parameters);
@@ -343,14 +350,15 @@ class Geo6
      * @param int    $id
      * @param string $language
      * @param int    $type
+     * @param string $country
      * @return string
      *
      * @deprecated Renamed
      * @see        getServicePointPageUrl
      */
-    public function getServicePointPage($id, $language = 'nl', $type = 3)
+    public function getServicePointPage($id, $language = 'nl', $type = 3, $country = 'BE')
     {
-        return $this->getServicePointPageUrl($id, $language, $type);
+        return $this->getServicePointPageUrl($id, $language, $type, $country);
     }
 
     /**
