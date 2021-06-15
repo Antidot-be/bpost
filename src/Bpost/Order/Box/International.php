@@ -131,6 +131,7 @@ class International implements IBox
             Product::PRODUCT_NAME_BPACK_WORLD_EASY_RETURN,
             Product::PRODUCT_NAME_BPACK_WORLD_EXPRESS_PRO,
             Product::PRODUCT_NAME_BPACK_EUROPE_BUSINESS,
+            Product::PRODUCT_NAME_BPACK_AT_BPOST_INTERNATIONAL,
         );
     }
 
@@ -213,6 +214,61 @@ class International implements IBox
     }
 
     /**
+     * Return the object as an array for usage in the XML
+     *
+     * @param  \DomDocument $document
+     * @param  string       $prefix
+     * @return \DomElement
+     */
+    public function toPugoXML(\DOMDocument $document, $prefix = null, $tagName = 'internationalBox')
+    {
+        if ($tagName != "atIntlPugo") {
+            throw new \Exception("tagName is not correct :". $tagName." instead of atIntlPugo", 1);
+        }
+        if ($prefix !== null) {
+            $tagName = $prefix . ':' . $tagName;
+        }
+
+        $internationalBox = $document->createElement($tagName);
+        $international = $document->createElement('international:product', Product::PRODUCT_NAME_BPACK_AT_BPOST_INTERNATIONAL);
+        $internationalBox->appendChild($international);
+
+        $options = $this->getOptions();
+        if (!empty($options)) {
+            $optionsElement = $document->createElement('international:options');
+            foreach ($options as $option) {
+                $optionsElement->appendChild(
+                    $option->toXML($document)
+                );
+            }
+            $internationalBox->appendChild($optionsElement);
+        }
+
+        if ($this->getReceiver() !== null) {
+            $internationalBox->appendChild(
+                $this->getReceiver()->toXML($document, 'international')
+            );
+        }
+
+        if ($this->getParcelWeight() !== null) {
+            $internationalBox->appendChild(
+                $document->createElement(
+                    'international:parcelWeight',
+                    $this->getParcelWeight()
+                )
+            );
+        }
+
+        if ($this->getCustomsInfo() !== null) {
+            $internationalBox->appendChild(
+                $this->getCustomsInfo()->toXML($document, 'international')
+            );
+        }
+
+        return $internationalBox;
+    }
+
+    /**
      * @param  \SimpleXMLElement $xml
      *
      * @return International
@@ -236,7 +292,18 @@ class International implements IBox
                 if (in_array($optionData->getName(), array(Messaging::MESSAGING_TYPE_INFO_DISTRIBUTED))) {
                     $option = Messaging::createFromXML($optionData);
                 } else {
-                    $className = '\\Bpost\\BpostApiClient\\Bpost\\Order\\Box\\Option\\' . ucfirst($optionData->getName());
+                    switch ($optionData->getName()) {
+                        case 'insured':
+                            $class = 'Insurance';
+                            break;
+                        case 'keepMeInformed':
+                            $class = 'Messaging';
+                            break;
+                        default:
+                            $class = ucfirst($optionData->getName());
+                    }
+                    $className = '\\Bpost\\BpostApiClient\\Bpost\\Order\\Box\\Option\\' . $class;
+
                     if (!method_exists($className, 'createFromXML')) {
                         throw new BpostNotImplementedException('No createFromXML found into ' . $className);
                     }
@@ -269,5 +336,19 @@ class International implements IBox
         }
 
         return $international;
+    }
+
+    /**
+     * Prefix $tagName with the $prefix, if needed
+     * @param string $prefix
+     * @param string $tagName
+     * @return string
+     */
+    public function getPrefixedTagName($tagName, $prefix = null)
+    {
+        if (empty($prefix)) {
+            return $tagName;
+        }
+        return $prefix . ':' . $tagName;
     }
 }

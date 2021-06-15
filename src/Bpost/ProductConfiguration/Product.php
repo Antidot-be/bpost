@@ -22,6 +22,7 @@ class Product
     const PRODUCT_NAME_BPACK_WORLD_EXPRESS_PRO = 'bpack World Express Pro';
     const PRODUCT_NAME_BPACK_WORLD_BUSINESS = 'bpack World Business';
     const PRODUCT_NAME_BPACK_EUROPE_BUSINESS = 'bpack Europe Business';
+    const PRODUCT_NAME_BPACK_AT_BPOST_INTERNATIONAL = 'bpack@bpost international';
 
     /** @var  bool */
     private $default;
@@ -150,6 +151,7 @@ class Product
             case self::PRODUCT_NAME_BPACK_WORLD_EXPRESS_PRO:
             case self::PRODUCT_NAME_BPACK_WORLD_BUSINESS:
             case self::PRODUCT_NAME_BPACK_EUROPE_BUSINESS:
+            case self::PRODUCT_NAME_BPACK_AT_BPOST_INTERNATIONAL:
             default:
                 return false;
         }

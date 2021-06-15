@@ -73,7 +73,12 @@ class Messaging extends Option
      */
     public function setLanguage($language)
     {
-        $language = strtoupper($language);
+        if (empty($language)) {
+            $language = self::MESSAGING_LANGUAGE_EN;
+        }
+        else{
+            $language = strtoupper($language);
+        }
 
         if (!in_array($language, self::getPossibleLanguageValues())) {
             throw new BpostInvalidValueException('language', $language, self::getPossibleLanguageValues());

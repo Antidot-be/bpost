@@ -213,9 +213,12 @@ class Address
      * @param  string       $prefix
      * @return \DOMElement
      */
-    public function toXML(\DOMDocument $document, $prefix = 'common')
+    public function toXML(\DOMDocument $document, $prefix = 'common', $international = false)
     {
         $tagName = static::TAG_NAME;
+        if ($tagName =="pugoAddress" and $international == true){
+            $tagName="international:pugoAddress";
+        }
         $address = $document->createElement($tagName);
         $document->appendChild($address);
 

@@ -195,7 +195,7 @@ class At247 extends National
      */
     public function setRequestedDeliveryDate($requestedDeliveryDate)
     {
-        $this->requestedDeliveryDate = (string)$requestedDeliveryDate;
+        $this->requestedDeliveryDate = $requestedDeliveryDate;
     }
 
     /**
